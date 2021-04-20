@@ -24,3 +24,6 @@ python fetch.py
 scrape.pyで構成銘柄を取得してCSVデータとして保存  
 fetch.pyでデータを取得  
 fetch.py updateでデータを更新
+
+## 注意点
+現状、日足での動作しか確認できていません
