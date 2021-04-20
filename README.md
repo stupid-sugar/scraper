@@ -22,4 +22,5 @@ python fetch.py
 ```
 ## 使用方法
 scrape.pyで構成銘柄を取得してCSVデータとして保存  
-fetch.pyでデータを取得
+fetch.pyでデータを取得  
+fetch.py updateでデータを更新
