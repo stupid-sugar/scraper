@@ -37,29 +37,26 @@ class Scraper():
     def download(self, code):
         msft = yf.Ticker(str(code)+".T")
         data = msft.history(period="max", interval=self.interval, start=self.start, end=self.end)
-        if len(data)>0: data.to_csv(self.save_format.format(code))
+        data.to_csv(self.save_format.format(code))
 
     """
     Update
     """
     def update(self, code):
-        if os.path.exists(self.save_format.format(code))==False:
-            self.download(code)
-            return
-        
         data = pd.read_csv(self.save_format.format(code), index_col="Date")
         start = data.index[-1]
-                
+        
+        if start==self.start:
+            print('code {} have updated already')
+            return
+            
         msft = yf.Ticker(str(code)+".T")
         row = msft.history(period="max", interval=self.interval, start=start, end=self.end)
         row.index = row.index.astype(str)
-        
-        # yfinance library get out of range data
-        # ex. param (start='2021-04-24', end='2021-04-27') returned 2021-04-23 data
-        # That's why remove duplicated data to maintain accuracy
+
         data = pd.concat([data, row], axis=0)
-        data = data[~data.index.duplicated(keep='first')]
-        data.to_csv(self.save_format.format(code))
+        data.to_csv(self.save_format.format(code)) 
+
 
 
 operation = 'download'
@@ -74,8 +71,6 @@ param['end'] = '2021-04-01'
 Scraper = Scraper(param)
 df = pd.read_csv("stock_list.csv")
 
-# yahoo finance price is not accurate
-# ex. (DENSO 4902.T 2021-04-12 ~ 2021-04-16) prices were multiplied x100
 if operation == 'download': function = getattr(Scraper, 'download')
 elif operation == 'update': function = getattr(Scraper, 'update')
 else:   print("Not Supported Operation")
